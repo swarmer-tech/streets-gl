@@ -185,7 +185,7 @@ export default class FreeControlsNavigator extends ControlsNavigator {
 
 	public override enable(): void {
 		super.enable();
-		this.element.requestPointerLock();
+		// this.element.requestPointerLock();
 	}
 
 	public override disable(): void {
@@ -212,7 +212,7 @@ export default class FreeControlsNavigator extends ControlsNavigator {
 			z: this.camera.position.z,
 			pitch: this.pitch,
 			yaw: this.yaw,
-			distance: 1000
+			distance: 0,
 		};
 	}
 

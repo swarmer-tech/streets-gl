@@ -31,7 +31,7 @@ export enum NavigationMode {
 
 export default class ControlsSystem extends System {
 	private readonly element: HTMLElement;
-	public mode: NavigationMode = NavigationMode.Ground;
+	public mode: NavigationMode = NavigationMode.Free;
 	private camera: PerspectiveCamera;
 	private tick: number = 0;
 	public target: Vec3 = new Vec3();
@@ -76,10 +76,10 @@ export default class ControlsSystem extends System {
 		this.freeNavigator = new FreeControlsNavigator(this.element, this.camera, terrainHeightProvider);
 		this.slippyNavigator = new SlippyControlsNavigator(this.element, this.camera, cursorStyleSystem, terrainHeightProvider);
 
-		this.activeNavigator = this.slippyNavigator;
-		this.slippyNavigator.enable();
-		this.slippyNavigator.syncWithCamera(null);
-		this.mode = NavigationMode.Slippy;
+		this.activeNavigator = this.freeNavigator;
+		this.activeNavigator.enable();
+		this.activeNavigator.syncWithCamera(null);
+		this.mode = NavigationMode.Free;
 
 		this.initStateFromHash();
 	}
@@ -141,21 +141,21 @@ export default class ControlsSystem extends System {
 	}
 
 	private updatePositionFromState(state: ControlsState): void {
-		if (state.distance < Config.MaxCameraDistance && this.slippyNavigator.isEnabled) {
-			this.slippyNavigator.disable();
-			this.groundNavigator.enable();
-
-			this.activeNavigator = this.groundNavigator;
-			this.mode = NavigationMode.Ground;
-		}
-
-		if (state.distance > Config.MaxCameraDistance && this.groundNavigator.isEnabled) {
-			this.groundNavigator.disable();
-			this.slippyNavigator.enable();
-
-			this.activeNavigator = this.slippyNavigator;
-			this.mode = NavigationMode.Slippy;
-		}
+		// if (state.distance < Config.MaxCameraDistance && this.slippyNavigator.isEnabled) {
+		// 	this.slippyNavigator.disable();
+		// 	this.groundNavigator.enable();
+		//
+		// 	this.activeNavigator = this.groundNavigator;
+		// 	this.mode = NavigationMode.Ground;
+		// }
+		//
+		// if (state.distance > Config.MaxCameraDistance && this.groundNavigator.isEnabled) {
+		// 	this.groundNavigator.disable();
+		// 	this.slippyNavigator.enable();
+		//
+		// 	this.activeNavigator = this.slippyNavigator;
+		// 	this.mode = NavigationMode.Slippy;
+		// }
 
 		if (this.activeNavigator) {
 			this.activeNavigator.syncWithState(state);
@@ -163,23 +163,23 @@ export default class ControlsSystem extends System {
 	}
 
 	private keyDownEvent(e: KeyboardEvent): void {
-		if (e.code === 'Tab') {
-			e.preventDefault();
-
-			if (this.mode === NavigationMode.Free) {
-				this.mode = NavigationMode.Ground;
-				this.activeNavigator = this.groundNavigator;
-				this.freeNavigator.disable();
-				this.groundNavigator.enable();
-				this.groundNavigator.syncWithCamera(this.freeNavigator);
-			} else if (this.mode === NavigationMode.Ground) {
-				this.mode = NavigationMode.Free;
-				this.activeNavigator = this.freeNavigator;
-				this.groundNavigator.disable();
-				this.freeNavigator.enable();
-				this.freeNavigator.syncWithCamera(this.groundNavigator);
-			}
-		}
+		// if (e.code === 'Tab') {
+		// 	e.preventDefault();
+		//
+		// 	if (this.mode === NavigationMode.Free) {
+		// 		this.mode = NavigationMode.Ground;
+		// 		this.activeNavigator = this.groundNavigator;
+		// 		this.freeNavigator.disable();
+		// 		this.groundNavigator.enable();
+		// 		this.groundNavigator.syncWithCamera(this.freeNavigator);
+		// 	} else if (this.mode === NavigationMode.Ground) {
+		// 		this.mode = NavigationMode.Free;
+		// 		this.activeNavigator = this.freeNavigator;
+		// 		this.groundNavigator.disable();
+		// 		this.freeNavigator.enable();
+		// 		this.freeNavigator.syncWithCamera(this.groundNavigator);
+		// 	}
+		// }
 	}
 
 	private mouseDownEvent(e: MouseEvent): void {
@@ -250,42 +250,42 @@ export default class ControlsSystem extends System {
 
 		this.activeNavigator.update(deltaTime);
 
-		if (this.groundNavigator.switchToSlippy) {
-			this.groundNavigator.switchToSlippy = false;
+		// if (this.groundNavigator.switchToSlippy) {
+		// 	this.groundNavigator.switchToSlippy = false;
+		//
+		// 	this.groundNavigator.disable();
+		// 	this.slippyNavigator.enable();
+		// 	this.slippyNavigator.syncWithCamera(this.groundNavigator);
+		//
+		// 	this.activeNavigator = this.slippyNavigator;
+		// 	this.mode = NavigationMode.Slippy;
+		//
+		// 	this.activeNavigator.update(deltaTime);
+		// }
+		//
+		// if (this.slippyNavigator.switchToGround) {
+		// 	this.slippyNavigator.switchToGround = false;
+		//
+		// 	this.slippyNavigator.disable();
+		// 	this.groundNavigator.enable();
+		// 	this.groundNavigator.syncWithCamera(this.slippyNavigator);
+		//
+		// 	this.activeNavigator = this.groundNavigator;
+		// 	this.mode = NavigationMode.Ground;
+		//
+		// 	this.activeNavigator.update(deltaTime);
+		// }
 
-			this.groundNavigator.disable();
-			this.slippyNavigator.enable();
-			this.slippyNavigator.syncWithCamera(this.groundNavigator);
-
-			this.activeNavigator = this.slippyNavigator;
-			this.mode = NavigationMode.Slippy;
-
-			this.activeNavigator.update(deltaTime);
-		}
-
-		if (this.slippyNavigator.switchToGround) {
-			this.slippyNavigator.switchToGround = false;
-
-			this.slippyNavigator.disable();
-			this.groundNavigator.enable();
-			this.groundNavigator.syncWithCamera(this.slippyNavigator);
-
-			this.activeNavigator = this.groundNavigator;
-			this.mode = NavigationMode.Ground;
-
-			this.activeNavigator.update(deltaTime);
-		}
-
-		if (this.wheelZoomScaleTarget !== this.wheelZoomScale) {
-			const sign = Math.sign(this.wheelZoomScaleTarget - this.wheelZoomScale);
-
-			this.wheelZoomScale += sign * deltaTime * WheelZoomFactor;
-			this.wheelZoomScale = MathUtils.clamp(this.wheelZoomScale, 0, 1);
-
-			const alpha = Easing.easeOutCubic(this.wheelZoomScale);
-
-			this.camera.zoom(MathUtils.lerp(1, Config.CameraFOVZoomFactor, alpha));
-		}
+		// if (this.wheelZoomScaleTarget !== this.wheelZoomScale) {
+		// 	const sign = Math.sign(this.wheelZoomScaleTarget - this.wheelZoomScale);
+		//
+		// 	this.wheelZoomScale += sign * deltaTime * WheelZoomFactor;
+		// 	this.wheelZoomScale = MathUtils.clamp(this.wheelZoomScale, 0, 1);
+		//
+		// 	const alpha = Easing.easeOutCubic(this.wheelZoomScale);
+		//
+		// 	this.camera.zoom(MathUtils.lerp(1, Config.CameraFOVZoomFactor, alpha));
+		// }
 
 		this.updateHash();
 

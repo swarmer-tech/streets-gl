@@ -29,16 +29,16 @@ export default class UI implements StateStorage {
 		const element = document.getElementById('ui');
 		const root = createRoot(element);
 
-		root.render(
-			<React.StrictMode>
-				<AtomsContext.Provider value={atoms}>
-					<ActionsContext.Provider value={actions}>
-						<RecoilRoot>
-							<Root/>
-						</RecoilRoot>
-					</ActionsContext.Provider>
-				</AtomsContext.Provider>
-			</React.StrictMode>
+		root.render(<></>
+			// <React.StrictMode>
+			// 	<AtomsContext.Provider value={atoms}>
+			// 		<ActionsContext.Provider value={actions}>
+			// 			<RecoilRoot>
+			// 				<Root/>
+			// 			</RecoilRoot>
+			// 		</ActionsContext.Provider>
+			// 	</AtomsContext.Provider>
+			// </React.StrictMode>
 		);
 
 		element.addEventListener('click', event => {
