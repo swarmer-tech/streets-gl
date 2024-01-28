@@ -3,7 +3,7 @@ import System from "./System";
 type AbstractSystemType = { new(): System };
 
 export default class SystemManager {
-	private systems: Map<AbstractSystemType, System> = new Map();
+	public systems: Map<AbstractSystemType, System> = new Map();
 	private onReadyListeners: Map<AbstractSystemType, ((system: System) => void)[]> = new Map();
 
 	public addSystems(...systemTypes: AbstractSystemType[]): void {

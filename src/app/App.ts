@@ -20,7 +20,7 @@ import SlippyMapSystem from "~/app/systems/SlippyMapSystem";
 class App {
 	private loop = (deltaTime: number): void => this.update(deltaTime);
 	private time = 0;
-	private systemManager: SystemManager;
+	public systemManager: SystemManager;
 
 	public constructor() {
 		this.init();
@@ -61,6 +61,14 @@ class App {
 		this.update();
 	}
 
+	public get scene(): any {
+		return this.systemManager.getSystem(SceneSystem);
+	}
+
+	public get controls(): any {
+		return this.systemManager.getSystem(ControlsSystem);
+	}
+
 	private update(rafTime = 0): void {
 		requestAnimationFrame(this.loop);
 
@@ -74,5 +82,5 @@ class App {
 		this.systemManager.getSystem(UISystem).updateFrameTime(frameTime);
 	}
 }
-
-export default new App;
+(window as any).app = new App();
+export default (window as any).app;
