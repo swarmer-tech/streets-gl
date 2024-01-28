@@ -29,6 +29,7 @@ import ResourceLoader from "~/app/world/ResourceLoader";
 import {RendererTypes} from "~/lib/renderer/RendererTypes";
 import ControlsSystem from "~/app/systems/ControlsSystem";
 import CursorStyleSystem from "~/app/systems/CursorStyleSystem";
+import {IMG_HEIGHT, IMG_WIDTH} from "~/drone";
 
 export default class RenderSystem extends System {
 	private renderer: AbstractRenderer;
@@ -181,8 +182,7 @@ export default class RenderSystem extends System {
 	}
 
 	public get resolutionUI(): Vec2 {
-		const pixelRatio = window.devicePixelRatio;
-		return new Vec2(window.innerWidth * pixelRatio, window.innerHeight * pixelRatio);
+		return new Vec2(IMG_WIDTH, IMG_HEIGHT);
 	}
 
 	public get resolutionScene(): Vec2 {
