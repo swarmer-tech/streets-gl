@@ -9,7 +9,7 @@ const Config = {
 	MinCameraDistance: 0,
 	MaxCameraDistance: 4000,
 	SlippyMapTransitionDuration: 0,
-	MinFreeCameraHeight: 0,
+	MinFreeCameraHeight: 1,
 	CameraZoomSmoothing: 0.4,
 	CameraZoomSpeed: 0.0005,
 	CameraZoomTrackpadFactor: 4,

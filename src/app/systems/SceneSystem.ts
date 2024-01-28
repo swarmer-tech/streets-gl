@@ -52,7 +52,7 @@ export default class SceneSystem extends System {
 		const wrapper = new Object3D();
 		const camera = new PerspectiveCamera({
 			fov: this.getCameraFoVFromSettings(),
-			near: 10,
+			near: 0.0001,
 			far: 100000,
 			aspect: window.innerWidth / window.innerHeight
 		});
