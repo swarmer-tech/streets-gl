@@ -42,7 +42,7 @@ export default class RenderSystem extends System {
 	public postInit(): void {
 		const canvas = <HTMLCanvasElement>document.getElementById('canvas');
 
-		this.renderer = new WebGL2Renderer(canvas.getContext('webgl2', {powerPreference: "high-performance"}));
+		this.renderer = new WebGL2Renderer(canvas.getContext('webgl2', {powerPreference: "high-performance", preserveDrawingBuffer: true}));
 		this.renderer.setSize(this.resolutionUI.x, this.resolutionUI.y);
 
 		console.log(`Vendor: ${this.renderer.rendererInfo[0]} \nRenderer: ${this.renderer.rendererInfo[1]}`);
