@@ -5,11 +5,26 @@
         <title>Streets GL</title>
         <meta name="description" content="Streets GL is a OpenStreetMap 3D renderer that allows to explore the whole world in great detail">
         <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <style>
+            #log {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+                img {
+                    width: 320px;
+                    height: auto;
+                }
+            }
+            button {
+                margin: 16px 0;
+            }
+        </style>
     </head>
     <body>
         <div id="wrapper">
-            <div id="ui"></div>
             <canvas id="canvas"></canvas>
+            <div id="ui"></div>
+            <div id="log"></div>
         </div>
     </body>
 </html>
