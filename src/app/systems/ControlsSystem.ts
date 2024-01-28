@@ -4,14 +4,14 @@ import URLControlsStateHandler from "../controls/URLControlsStateHandler";
 import Config from "../Config";
 import System from "../System";
 import SceneSystem from './SceneSystem';
-import Easing from "~/lib/math/Easing";
+// import Easing from "~/lib/math/Easing";
 import GroundControlsNavigator from "../controls/GroundControlsNavigator";
 import ControlsNavigator from "../controls/ControlsNavigator";
 import FreeControlsNavigator from "../controls/FreeControlsNavigator";
 import CursorStyleSystem from "./CursorStyleSystem";
 import PerspectiveCamera from "~/lib/core/PerspectiveCamera";
 import TerrainSystem from "~/app/systems/TerrainSystem";
-import SlippyControlsNavigator from "~/app/controls/SlippyControlsNavigator";
+// import SlippyControlsNavigator from "~/app/controls/SlippyControlsNavigator";
 
 const WheelZoomFactor = 6;
 
@@ -42,7 +42,7 @@ export default class ControlsSystem extends System {
 
 	private groundNavigator: GroundControlsNavigator;
 	private freeNavigator: FreeControlsNavigator;
-	private slippyNavigator: SlippyControlsNavigator;
+	// private slippyNavigator: SlippyControlsNavigator;
 	private activeNavigator: ControlsNavigator = null;
 
 	public constructor() {
@@ -74,7 +74,7 @@ export default class ControlsSystem extends System {
 
 		this.groundNavigator = new GroundControlsNavigator(this.element, this.camera, cursorStyleSystem, terrainHeightProvider);
 		this.freeNavigator = new FreeControlsNavigator(this.element, this.camera, terrainHeightProvider);
-		this.slippyNavigator = new SlippyControlsNavigator(this.element, this.camera, cursorStyleSystem, terrainHeightProvider);
+		// this.slippyNavigator = new SlippyControlsNavigator(this.element, this.camera, cursorStyleSystem, terrainHeightProvider);
 
 		this.activeNavigator = this.freeNavigator;
 		this.activeNavigator.enable();
@@ -216,25 +216,27 @@ export default class ControlsSystem extends System {
 	}
 
 	public get isSlippyMapVisible(): boolean {
-		return this.slippyNavigator.isEnabled || this.groundNavigator.slippyMapOverlayFactor > 0;
+		// return this.slippyNavigator.isEnabled || this.groundNavigator.slippyMapOverlayFactor > 0;
+		return false;
 	}
 
 	public get isTilesVisible(): boolean {
-		return this.groundNavigator.isEnabled || this.freeNavigator.isEnabled;
+		// return this.groundNavigator.isEnabled || this.freeNavigator.isEnabled;
+		return true;
 	}
 
 	public get slippyMapAndTilesFactor(): number {
-		if (this.slippyNavigator.isEnabled) {
-			return 1;
-		}
+		// if (this.slippyNavigator.isEnabled) {
+		// 	return 1;
+		// }
 
 		return this.groundNavigator.slippyMapOverlayFactor;
 	}
 
 	public get northDirection(): number {
-		if (this.groundNavigator && this.groundNavigator.isEnabled) {
-			return this.groundNavigator.yaw;
-		}
+		// if (this.groundNavigator && this.groundNavigator.isEnabled) {
+		// 	return this.groundNavigator.yaw;
+		// }
 
 		return 0;
 	}
