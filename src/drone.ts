@@ -2,11 +2,13 @@ import MathUtils from "~/lib/math/MathUtils";
 import Config from "~/app/Config";
 import {IDroneCoordinates} from "~/drone.types";
 
+import io from 'socket.io-client';
+
 export const IMG_WIDTH = 640;
 export const IMG_HEIGHT = 480;
 export const GET_URL = 'http://localhost:3000/get_coordinates';
-export const POST_URL = 'http://localhost:3000/save_image';
-export const REQUESTS_PER_SECOND = 5;
+export const POST_URL = 'http://localhost:5000/drone-image-upload';
+export const REQUESTS_PER_SECOND = 1;
 export const DOWNLOAD_IMAGES = false;
 
 const canvas = <HTMLCanvasElement>document.getElementById('canvas');
@@ -22,6 +24,7 @@ function useApp(): any {
 }
 
 function moveCamera(lat: number, lon: number, alt: number, pitch: number, yaw: number, fov: number = 80): void {
+    console.log(lat, lon, alt, pitch, yaw, fov)
     const {app, camera, controls} = useApp();
 
     const position = MathUtils.degrees2meters(MathUtils.clamp(lat, -85.051129, 85.051129), MathUtils.clamp(lon, -180, 180));
@@ -54,17 +57,19 @@ function getCanvasData(): string {
     return canvas.toDataURL(MIME_TYPE, QUALITY);
 }
 
-async function fetchDroneCoordinates(): Promise<typeof IDroneCoordinates> {
-    return (await fetch(GET_URL)).json() as IDroneCoordinates;
+async function fetchDroneCoordinates(): Promise<IDroneCoordinates> {
+    return (await fetch(GET_URL)).json() as unknown as IDroneCoordinates;
 }
 
 async function postImage(base64data: string): Promise<void> {
+    const formData = new FormData();
+    const blob = await fetch(base64data).then((res) => res.blob());
+
+    formData.append('image', blob, 'image.jpg');
+
     await fetch(POST_URL, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({base64data})
+        body: formData,
     });
 }
 
@@ -78,14 +83,37 @@ function addToLog(imageData: string): void {
     }
 }
 
-async function processDronePosition(downloadImage?: boolean): Promise<void> {
-    const coordinates = await fetchDroneCoordinates();
+const droneInfoSocket = io('http://localhost:5000/drone-info');
+
+droneInfoSocket.on('connect', () => {
+    console.log('Connected to /drone-info');
+});
+
+let drone_data = {
+    "lattitude": "50.450001",
+    "longtitude": "30.523333",
+    "altitude": 25.5,
+    "drone_id": "emul0",
+    "yaw": 270.4,
+    "pitch": -12.0,
+    "roll": 5.2,
+    "heading": 220.2,
+    "camera_yaw": 270.4,
+    "camera_roll": 2.0,
+    "camera_pitch": -12.0,
+    "camera_horizontal_fov": 120.0,
+    "camera_vertical_fov": 80.0,
+    "camera_infrared": false
+}
+
+droneInfoSocket.on('drone_data', (data: any) => {
+    let coordinates = data["data"]
     moveCamera(parseFloat(String(coordinates.lattitude)), parseFloat(String(coordinates.longtitude)), parseFloat(String(coordinates.altitude)), coordinates.pitch, coordinates.yaw, coordinates.camera_horizontal_fov);
     const imageData = getCanvasData();
-    downloadImage && downloadCanvasData(imageData);
+    DOWNLOAD_IMAGES && downloadCanvasData(imageData);
     addToLog(imageData);
-    await postImage(imageData);
-}
+    postImage(imageData);
+});
 
 let interval: Timeout | null = null;
 
@@ -94,12 +122,12 @@ function isProcessing(): boolean {
 }
 
 function start(): void {
-    interval = setInterval(() => processDronePosition(DOWNLOAD_IMAGES), 1000 / REQUESTS_PER_SECOND);
+    // interval = setInterval(() => processDronePosition(DOWNLOAD_IMAGES), 1000 / REQUESTS_PER_SECOND);
 }
 
 function stop(): void {
-    interval !== null && clearInterval(interval);
-    interval = null;
+    // interval !== null && clearInterval(interval);
+    // interval = null;
 }
 
 
@@ -107,7 +135,7 @@ function stop(): void {
 (window as any).getCanvasData = getCanvasData;
 (window as any).downloadCanvasData = downloadCanvasData;
 (window as any).fetchDroneCoordinates = fetchDroneCoordinates;
-(window as any).processDronePosition = processDronePosition;
+// (window as any).processDronePosition = processDronePosition;
 (window as any).isProcessing = isProcessing;
 (window as any).start = start;
 (window as any).stop = stop;
